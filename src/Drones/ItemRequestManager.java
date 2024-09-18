@@ -1,5 +1,8 @@
 package Drones;
 
+import CommonUtils.BetterQueue;
+import CommonUtils.BetterStack;
+
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,6 +16,7 @@ import java.util.Scanner;
  * from the standard library.  Any other containers used must be ones you created.
  */
 public class ItemRequestManager implements ItemRequestManagerInterface {
+
     /**
      * Get the retrieval times as per the specifications
      *
@@ -27,6 +31,43 @@ public class ItemRequestManager implements ItemRequestManagerInterface {
             Scanner scan = new Scanner(new FileReader(filename));
 
             //todo
+            BetterStack<ItemRetrievalTimes> priorityItems = new BetterStack<>();
+
+            ArrayList<ItemRetrievalTimes> retrievalTimes = new ArrayList<>();
+
+            int numberOfRequests = scan.nextInt();
+            int timeToStorage = scan.nextInt();
+
+            int timeInterval = 0;
+            int position = 0;
+
+            int nextRequest = 0;
+            int index = 0;
+
+            ItemRetrievalTimes currentItem = new ItemRetrievalTimes(index, position);
+            priorityItems.push(currentItem);
+
+            while (index < numberOfRequests) {
+
+                if (priorityItems.peek().timeFilled == 4) {
+                    ItemRetrievalTimes completedItem = priorityItems.pop();
+                    retrievalTimes.add(new ItemRetrievalTimes(completedItem.index, timeInterval));
+                }
+
+                nextRequest = scan.nextInt();
+
+                if (nextRequest == timeInterval) {
+                    currentItem = new ItemRetrievalTimes(++index, position);
+                    priorityItems.push(currentItem);
+                }
+
+                timeInterval++;
+                position = (position + 1) % timeToStorage;
+            }
+
+
+            return retrievalTimes;
+
 
         } catch (IOException e) {
             //This should never happen... uh oh o.o
