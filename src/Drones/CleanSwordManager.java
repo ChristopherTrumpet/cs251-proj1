@@ -1,5 +1,7 @@
 package Drones;
 
+import CommonUtils.BetterQueue;
+
 import java.io.*;
 import java.util.ArrayList;
 
@@ -23,11 +25,47 @@ public class CleanSwordManager implements CleanSwordManagerInterface {
             BufferedReader bf = new BufferedReader(new FileReader(filename));
 
             //todo
-            int numberOfSwordsCleaned;
-            int swordRequests;
-            int timeSteps;
+            int numberOfSwords = 0;
+            int swordRequests = 0;
+            int swordDirtLevel = 0;
 
+            BetterQueue<Integer> requests = new BetterQueue<>();
+            BetterQueue<Integer> swordInventory = new BetterQueue<>();
 
+            ArrayList<CleanSwordTimes> cleanSwordTimes = new ArrayList<>();
+
+            String line;
+
+            if ((line = bf.readLine()) != null) {
+                String[] parts = line.split(" ");
+
+                numberOfSwords = Integer.parseInt(parts[0]);
+                swordRequests = Integer.parseInt(parts[1]);
+                swordDirtLevel = Integer.parseInt(parts[2]);
+
+            }
+
+            for (int i = 0; i < numberOfSwords; i++) {
+                swordInventory.add(Integer.parseInt(bf.readLine()));
+            }
+
+            for (int j = 0; j < swordRequests; j++) {
+                requests.add(Integer.parseInt(bf.readLine()));
+            }
+
+            int totalTime = 0;
+
+            while (!requests.isEmpty()) {
+
+                totalTime += swordInventory.remove();
+                swordInventory.add(swordDirtLevel);
+
+                CleanSwordTimes newTime = new CleanSwordTimes(totalTime, totalTime - requests.remove());
+
+                cleanSwordTimes.add(newTime);
+            }
+
+            return cleanSwordTimes;
 
         } catch (IOException e) {
             //This should never happen... uh oh o.o
